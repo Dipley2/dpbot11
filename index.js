@@ -9,7 +9,8 @@ const bot = mineflayer.createBot({
   host: 'hypixel.uz',
   port: 25565,
   username: 'dpbot11',
-  auth: 'offline'
+  auth: 'offline',
+  version: '1.20.1' // MUHIM: server versiyasi bilan bir xil
 });
 
 const password = 'dpbot24';
@@ -37,15 +38,13 @@ bot.on('chat', (username, message) => {
 
   if (msg === 'tp') {
     bot.chat(`/tp ${username}`);
-    console.log(`📡 /tp ${username} komanda yuborildi`);
   }
 });
 
-// 👇 Faqat dipleyggz yuborgan tpa so‘rovlarini qabul qiladi
+// Faqat `dipleyggz` yuborgan TPA ni qabul qiladi
 bot.on('message', (jsonMsg) => {
   const msg = jsonMsg.toString().toLowerCase();
 
-  // Shart: "dipleyggz" tpa tashlasa va bu so‘rov matni chiqsa
   if (
     msg.includes('teleport') &&
     msg.includes('request') &&
@@ -54,11 +53,12 @@ bot.on('message', (jsonMsg) => {
     console.log('📨 TPA so‘rovi DIPLEYGGZdan olindi. Qabul qilinyapti!');
     setTimeout(() => {
       bot.chat('/tpaccept');
-    }, 1000); // 1 soniya kutish
+    }, 1000);
   } else if (msg.includes('teleport') && msg.includes('request')) {
-    console.log('⚠️ Boshqa o‘yinchidan tpa kelgan, e’tibor berilmadi.');
+    console.log('⚠️ Boshqadan tpa kelgan, qabul qilinmadi.');
   }
 });
 
-bot.on('error', err => console.log('❌ Xato:', err));
+// ❌ Xatoliklarni ko‘rsat
+bot.on('error', err => console.log('❌ Xatolik:', err));
 bot.on('end', () => console.log('⚠️ Bot serverdan chiqib ketdi.'));
