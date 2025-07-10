@@ -1,50 +1,64 @@
-const mineflayer = require('mineflayer')
+const mineflayer = require('mineflayer');
+const express = require('express');
+
+const app = express();
+app.get('/', (req, res) => res.send('Bot tirik!'));
+app.listen(3000, () => console.log('Ping server ishlamoqda.'));
 
 const bot = mineflayer.createBot({
-    host: 'hypixel.uz', 
-    port: 25566,
-    version: 1.20.1,
-    username: 'dpbot22'
-})
-let password = "parol" 
+  host: 'hypixel.uz',
+  port: 25565,
+  username: 'dpbot11',
+  auth: 'offline',
+  version: '1.20.1' // MUHIM: server versiyasi bilan bir xil
+});
 
-bot.on('messagestr', (message) => {
-    console.log(message)
+const password = 'dpbot24';
 
-    if (message.includes("/register")) {
-        bot.chat('/register ${password} ${password}')  
-    }
-    
-    if (message.includes("/login")) {
-        bot.chat('/login ${password}')
-    }
-})
+bot.on('spawn', () => {
+  console.log('✅ Bot serverga kirdi!');
 
-async function dig() {
-    if (!bot.heldItem || !bot.heldItem.name.includes('pickaxe')) {
-        var pickaxe = bot.inventory.items().filter(i => i.name.includes('pickaxe')) [0];
-        if (pickaxe) await bot.equip(pickaxe, 'hand') 
-        if (!pickaxe) bot.quit();
-    }
-    var block = bot.blockAtCursor(7);
-    if (!block) return setTimeout(function () {
-        dig();
-    }, 100);
-    await bot.dig(block, 'ignore', 'raycast')
-    dig()
-}
+  setTimeout(() => {
+    bot.chat(`/register ${password} ${password}`);
+    bot.chat(`/login ${password}`);
+    console.log(`🔐 Avto-login/register: ${password}`);
+  }, 3000);
+
+  bot.chat('dpbot11 onlayn!');
+});
 
 bot.on('chat', (username, message) => {
-  if (username == 'dipleyggz')  { 
-        if (message == 'tpan1')
-        bot.chat('/tpa dipleyggz')
-    }
-})
+  if (username === bot.username) return;
 
-bot.on('chat', (username, message) => {
-    if (username == 'dipleyggz')  { 
-        if (message == 'kovla1') { 
-            dig();
-        }
-    }
-})
+  const msg = message.toLowerCase();
+
+  if (msg === 'salom') {
+    bot.chat(`Salom, ${username}!`);
+  }
+
+  if (msg === 'tp') {
+    bot.chat(`/tp ${username}`);
+  }
+});
+
+// Faqat `dipleyggz` yuborgan TPA ni qabul qiladi
+bot.on('message', (jsonMsg) => {
+  const msg = jsonMsg.toString().toLowerCase();
+
+  if (
+    msg.includes('teleport') &&
+    msg.includes('request') &&
+    msg.includes('dipleyggz')
+  ) {
+    console.log('📨 TPA so‘rovi DIPLEYGGZdan olindi. Qabul qilinyapti!');
+    setTimeout(() => {
+      bot.chat('/tpaccept');
+    }, 1000);
+  } else if (msg.includes('teleport') && msg.includes('request')) {
+    console.log('⚠️ Boshqadan tpa kelgan, qabul qilinmadi.');
+  }
+});
+
+// ❌ Xatoliklarni ko‘rsat
+bot.on('error', err => console.log('❌ Xatolik:', err));
+bot.on('end', () => console.log('⚠️ Bot serverdan chiqib ketdi.'));
