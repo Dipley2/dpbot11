@@ -13,7 +13,7 @@ const bot = mineflayer.createBot({
   version: '1.20.1' // MUHIM: server versiyasi bilan bir xil
 });
 
-const password = 'dpbot24';
+const password = 'parol';
 
 bot.on('spawn', () => {
   console.log('✅ Bot serverga kirdi!');
